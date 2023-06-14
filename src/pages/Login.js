@@ -4,8 +4,11 @@ import loginImage from "../assets/login.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { signIn, googleLogin } from "../features/auth/authSlice";
 import { useEffect } from "react";
+import { toast } from "react-hot-toast";
 const Login = () => {
-  const { isLoading, email } = useSelector((state) => state.auth);
+  const { isLoading, email, isError, error } = useSelector(
+    (state) => state.auth
+  );
   const { register, handleSubmit, reset } = useForm();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -16,10 +19,20 @@ const Login = () => {
     }
   }, [isLoading, email, navigate]);
 
+  useEffect(() => {
+    if (isError) {
+      toast.error(error);
+    }
+  }, [isError, error]);
+
   const onSubmit = (data) => {
     console.log(data);
     dispatch(signIn(data));
     reset();
+  };
+
+  const handleLogin = () => {
+    dispatch(googleLogin());
   };
 
   return (
@@ -70,7 +83,7 @@ const Login = () => {
               <button
                 type="button"
                 className="font-bold text-primary hover:text-black hover:scale-105 transition-all border border-gray-500 hover:border-primary py-3 rounded-full bg-white w-full"
-                onClick={() => dispatch(googleLogin())}
+                onClick={handleLogin}
               >
                 Login With Google
               </button>

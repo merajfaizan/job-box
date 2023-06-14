@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import loginImage from "../assets/login.svg";
 import { useForm, useWatch } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { createUser } from "../features/auth/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { createUser, googleLogin } from "../features/auth/authSlice";
+import { toast } from "react-hot-toast";
+
 const Signup = () => {
   const { handleSubmit, register, control } = useForm();
   const password = useWatch({ control, name: "password" });
@@ -11,6 +13,9 @@ const Signup = () => {
   const navigate = useNavigate();
   const [disabled, setDisabled] = useState(true);
   const dispatch = useDispatch();
+  const { isLoading, email, isError, error } = useSelector(
+    (state) => state.auth
+  );
 
   useEffect(() => {
     if (
@@ -25,6 +30,15 @@ const Signup = () => {
       setDisabled(true);
     }
   }, [password, confirmPassword]);
+
+  useEffect(() => {
+    if (!isLoading && email) {
+      navigate("/");
+    }
+    if (isError) {
+      toast.error(error);
+    }
+  }, [isLoading, email, navigate, isError, error]);
 
   const onSubmit = (data) => {
     console.log(data);
@@ -94,6 +108,13 @@ const Signup = () => {
                   </span>
                 </p>
               </div>
+              <button
+                type="button"
+                className="font-bold text-primary hover:text-black hover:scale-105 transition-all border border-gray-500 hover:border-primary py-3 rounded-full bg-white w-full"
+                onClick={() => dispatch(googleLogin())}
+              >
+                SignUp With Google
+              </button>
             </div>
           </form>
         </div>
