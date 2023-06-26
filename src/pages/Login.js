@@ -6,9 +6,10 @@ import { signIn, googleLogin } from "../features/auth/authSlice";
 import { useEffect } from "react";
 import { toast } from "react-hot-toast";
 const Login = () => {
-  const { isLoading, email, isError, error } = useSelector(
+  const { isLoading, user, isError, error } = useSelector(
     (state) => state.auth
   );
+  const { email } = user;
   const { register, handleSubmit, reset } = useForm();
   const navigate = useNavigate();
   const dispatch = useDispatch();
