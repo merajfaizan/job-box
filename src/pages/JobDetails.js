@@ -2,11 +2,16 @@ import React from "react";
 
 import meeting from "../assets/meeting.jpg";
 import { BsArrowRightShort, BsArrowReturnRight } from "react-icons/bs";
-import { useParams } from "react-router-dom";
-import { useJobByIdQuery } from "../features/jobs/jobApi";
+import { useNavigate, useParams } from "react-router-dom";
+import { useApplyMutation, useJobByIdQuery } from "../features/jobs/jobApi";
+import { useSelector } from "react-redux";
+import { toast } from "react-hot-toast";
 const JobDetails = () => {
+  const { user } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
   const { id } = useParams();
   const { data } = useJobByIdQuery(id);
+  const [apply] = useApplyMutation();
   const {
     companyName,
     position,
@@ -20,7 +25,27 @@ const JobDetails = () => {
     responsibilities,
     overview,
     queries,
+    _id,
   } = data?.data || {};
+
+  const handleApply = () => {
+    if (user.role == "employer") {
+      toast.error("you need a candidate account to apply");
+      return;
+    }
+
+    if (user.role == "") {
+      navigate("/register");
+      return;
+    }
+
+    const data = {
+      userId: user?._id,
+      email: user?.email,
+      jobId: _id,
+    };
+    apply(data);
+  };
 
   return (
     <div className="pt-14 grid grid-cols-12 gap-5">
@@ -31,7 +56,9 @@ const JobDetails = () => {
         <div className="space-y-5">
           <div className="flex justify-between items-center mt-5">
             <h1 className="text-xl font-semibold text-primary">{position}</h1>
-            <button className="btn">Apply</button>
+            <button onClick={handleApply} className="btn">
+              Apply
+            </button>
           </div>
           <div>
             <h1 className="text-primary text-lg font-medium mb-3">Overview</h1>
