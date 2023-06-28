@@ -23,7 +23,9 @@ export const createUser = createAsyncThunk(
 );
 
 export const getUser = createAsyncThunk("auth/getUser", async (email) => {
-  const res = await fetch(`${process.env.REACT_APP_DEV_URL}/user/${email}`);
+  const res = await fetch(
+    `https://jobbox-server-iota.vercel.app/user/${email}`
+  );
   const data = await res.json();
 
   if (data.status) {
